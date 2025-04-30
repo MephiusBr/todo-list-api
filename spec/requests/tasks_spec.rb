@@ -30,7 +30,7 @@ RSpec.describe "Tasks API", type: :request do
       end
     end
 
-    context "when the data is invalid" do
+    context "when the payload is invalid" do
       it "returns a 400 bad request with an error message" do
         expect {
           post tasks_path, params: { name: nil, content: task.content }
