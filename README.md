@@ -1,24 +1,62 @@
-# README
+# todo-list-api
+## project setup
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+### Install gems:
+```
+$ bundle install
+```
 
-Things you may want to cover:
+### Update the database by running migrations:
+```
+rails db:migrate
+```
 
-* Ruby version
+### Feed the database with default seeds:
+```
+rails db:seed
+```
 
-* System dependencies
+### Start the web server on http://localhost:3000 by default:
+```
+rails server
+```
 
-* Configuration
+### Run all RSpec tests
+```
+rspec -f documentation spec/
+```
 
-* Database creation
+## Usage
+| HTTP Verbs | paths      | reason             |
+| ---------- | ---------- | ------------------ |
+| GET        | /tasks     | list all tasks     |
+| GET        | /tasks/:id | list specific task |
+| POST       | /tasks     | create a task      |
+| PATCH      | /tasks/:id | update a task      |
+| DELETE     | /tasks/:id | delete a task      |
 
-* Database initialization
+## Use case examples
+#### list all tasks
+```
+curl -X GET -H 'Content-type: application/json' http://localhost:3000/tasks
+```
 
-* How to run the test suite
+#### list specific task
+```
+curl -X GET -H 'Content-type: application/json' http://localhost:3000/tasks/1
+```
 
-* Services (job queues, cache servers, search engines, etc.)
+#### create a new task
+```
+$ curl -X POST -H 'Content-type: application/json' -d '{"name": "new task", "content": "new content"}' localhost:3000/tasks
+```
 
-* Deployment instructions
+#### update a task
+```
+curl -X PATCH -H 'Content-type: application/json' -d '{"name": "updated task", "content": "updated content"}' localhost:3000/tasks/1
+```
 
-* ...
+#### delete a task
+```
+curl -X DELETE -H 'Content-type: application/json' localhost:3000/tasks/1
+```
