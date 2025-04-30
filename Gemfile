@@ -48,4 +48,5 @@ group :development, :test do
   gem "rspec-rails", "~> 7.0"
   gem "factory_bot_rails", "~> 6.0"
   gem "byebug"
+  gem "database_cleaner-active_record"
 end
