@@ -1,5 +1,5 @@
 class TasksController < ApplicationController
-  before_action :set_task, only: :show
+  before_action :set_task, only: [:show, :update]
 
   def index
     @tasks = Task.all
@@ -19,6 +19,16 @@ class TasksController < ApplicationController
   def show
     return task_does_not_exist unless @task.present?
     render json: TaskPresenter.new(@task).call
+  end
+
+  def update
+    return task_does_not_exist unless @task.present?
+
+    if @task.update(task_params)
+      render json: TaskPresenter.new(@task).call
+    else
+      render json: @task.errors, status: :unprocessable_entity
+    end
   end
 
   private

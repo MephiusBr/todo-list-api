@@ -66,4 +66,60 @@ RSpec.describe "Tasks API", type: :request do
       end
     end
   end
+
+  describe "PATCH /tasks/:id" do
+    context "when the task exists" do
+      let!(:task) { create(:task, :with_content) }
+
+      context "when the payload is valid" do
+        let(:payload_name)    { { name: "updated task" } }
+        let(:payload_content) { { content: "updated content" }}
+
+        it "can change name" do
+          patch task_path(task.id), params: payload_name
+
+          expect(response).to have_http_status(:ok)
+          expect(parsed_body).to match(
+            a_hash_including("id" => task.id, "name" => payload_name[:name], "content" => task.content)
+          )
+        end
+
+        it "can change content" do
+          patch task_path(task.id), params: payload_content
+
+          expect(response).to have_http_status(:ok)
+          expect(parsed_body).to match(
+            a_hash_including("id" => task.id, "name" => task.name, "content" => payload_content[:content])
+          )
+        end
+
+        it "can change both name and content" do
+          patch task_path(task.id), params: payload_name.merge(payload_content)
+
+          expect(response).to have_http_status(:ok)
+          expect(parsed_body).to match(
+            a_hash_including("id" => task.id, "name" => payload_name[:name], "content" => payload_content[:content])
+          )
+        end
+      end
+
+      context "when the payload is invalid" do
+        it "returns a 422 unprocessable entity with errors messages" do
+          patch task_path(task.id), params: { name: nil }
+
+          expect(response).to have_http_status(:unprocessable_entity)
+          expect(parsed_body).to include("name" => ["can't be blank"])
+        end
+      end
+    end
+
+    context "when the task doesn't exist" do
+      it "returns a 400 bad request with an error message" do
+        patch task_path(-1)
+
+        expect(response).to have_http_status(:bad_request)
+        expect(parsed_body).to include("message" => "task doesn't exist!")
+      end
+    end
+  end
 end
