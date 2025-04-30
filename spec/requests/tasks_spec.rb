@@ -14,6 +14,34 @@ RSpec.describe "Tasks API", type: :request do
     end
   end
 
+  describe "POST /tasks" do
+    let(:task) { build(:task, :with_content) }
+
+    context "when the payload is valid" do
+      it "creates and return a new task" do
+        expect {
+          post tasks_path, params: { name: task.name, content: task.content }
+        }.to change { Task.count }.by(1)
+
+        expect(response).to have_http_status(:created)
+        expect(parsed_body).to match(
+          a_hash_including("id" => be_an(Integer), "name" => task.name, "content" => task.content)
+        )
+      end
+    end
+
+    context "when the data is invalid" do
+      it "returns a 400 bad request with an error message" do
+        expect {
+          post tasks_path, params: { name: nil, content: task.content }
+        }.to change { Task.count }.by(0)
+
+        expect(response).to have_http_status(:bad_request)
+        expect(parsed_body).to include("name" => ["can't be blank"])
+      end
+    end
+  end
+
   describe "GET /tasks/:id" do
     context "when the task exists" do
       let!(:task) { create(:task, :with_content) }
