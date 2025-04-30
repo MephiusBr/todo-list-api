@@ -75,7 +75,7 @@ RSpec.describe "Tasks API", type: :request do
         let(:payload_name)    { { name: "updated task" } }
         let(:payload_content) { { content: "updated content" }}
 
-        it "can change name" do
+        it "should change name" do
           patch task_path(task.id), params: payload_name
 
           expect(response).to have_http_status(:ok)
@@ -84,7 +84,7 @@ RSpec.describe "Tasks API", type: :request do
           )
         end
 
-        it "can change content" do
+        it "should hange content" do
           patch task_path(task.id), params: payload_content
 
           expect(response).to have_http_status(:ok)
@@ -93,7 +93,7 @@ RSpec.describe "Tasks API", type: :request do
           )
         end
 
-        it "can change both name and content" do
+        it "should change both name and content" do
           patch task_path(task.id), params: payload_name.merge(payload_content)
 
           expect(response).to have_http_status(:ok)
@@ -116,6 +116,26 @@ RSpec.describe "Tasks API", type: :request do
     context "when the task doesn't exist" do
       it "returns a 400 bad request with an error message" do
         patch task_path(-1)
+
+        expect(response).to have_http_status(:bad_request)
+        expect(parsed_body).to include("message" => "task doesn't exist!")
+      end
+    end
+  end
+
+  describe "DELETE /tasks/:id" do
+    context "when the task exists" do
+      let!(:task) { create(:task, :with_content) }
+
+      it "deletes the task" do
+        expect { delete task_path(task.id) }.to change { Task.count }.by(-1)
+        expect(response).to have_http_status(:no_content)
+      end
+    end
+
+    context "when the task doesn't exist" do
+      it "returns a 400 bad request with an error message" do
+        expect { delete task_path(-1) }.not_to change(Task, :count)
 
         expect(response).to have_http_status(:bad_request)
         expect(parsed_body).to include("message" => "task doesn't exist!")
